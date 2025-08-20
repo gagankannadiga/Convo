@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Convo - Direct Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    display: flex;
+    background: #0f1a25;
+    overflow: hidden;
+  }
+
+  aside {
+    width: 320px;
+    background: #15212f;
+    border-right: 1px solid #203344;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar-header {
+    padding: 24px;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #ffffff;
+  }
+
+  .sidebar-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-header p {
+    font-size: 0.875rem;
+    opacity: 0.85;
+  }
+
+  #groupsBtn {
+    margin: 16px 24px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #groupsBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(44, 83, 100, 0.5);
+  }
+
+  .contacts-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-title {
+    padding: 16px 24px 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #9db0c3;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  #contactsList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  #contactsList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid #233242;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  #contactsList li:hover {
+    background: #1c2b3a;
+  }
+
+  #contactsList li.active {
+    background: #203547;
+    border-left: 3px solid #2c5364;
+  }
+
+  .contact-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contact-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .contact-details h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 2px;
+  }
+
+  .contact-details p {
+    font-size: 0.75rem;
+    color: #a7bacf;
+  }
+
+  .delete-btn {
+    background: #ef4444;
+    border: none;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    opacity: 0;
+  }
+
+  #contactsList li:hover .delete-btn {
+    opacity: 1;
+  }
+
+  .delete-btn:hover {
+    background: #dc2626;
+  }
+
+  .add-contact {
+    padding: 24px;
+    border-top: 1px solid #203344;
+    background: #15212f;
+  }
+
+  .add-contact input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #2c3e50;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+    background: #0f1a25;
+    color: #ffffff;
+  }
+
+  .add-contact input:focus {
+    outline: none;
+    border-color: #2c5364;
+    box-shadow: 0 0 0 3px rgba(44, 83, 100, 0.3);
+  }
+
+  .add-contact button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+  }
+
+  .add-contact button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(44, 83, 100, 0.5);
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #0f1a25;
+  }
+
+  .chat-header {
+    background: #15212f;
+    border-bottom: 1px solid #203344;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chat-header h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .chat-header .status {
+    font-size: 0.875rem;
+    color: #a0b3c8;
+  }
+
+  #messages {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #0e1823;
+  }
+
+  .message {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    line-height: 1.5;
+    font-size: 0.875rem;
+    position: relative;
+    word-wrap: break-word;
+  }
+
+  .message.own {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #ffffff;
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+  }
+
+  .message.other {
+    background: #15212f;
+    color: #ffffff;
+    align-self: flex-start;
+    border: 1px solid #233242;
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .message-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .message-input-container {
+    padding: 20px 24px;
+    background: #15212f;
+    border-top: 1px solid #203344;
+  }
+
+  #form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0f1a25;
+    border-radius: 24px;
+    padding: 8px;
+    border: 1px solid #203344;
+  }
+
+  #form input[type="text"] {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    font-size: 0.875rem;
+    background: transparent;
+    color: #ffffff;
+  }
+
+  #form input[type="text"]::placeholder {
+    color: #a0b3c8;
+  }
+
+  .file-upload {
+    position: relative;
+    cursor: pointer;
+  }
+
+  #fileUpload {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-upload-icon {
+    padding: 8px;
+    color: #a0b3c8;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  .file-upload:hover .file-upload-icon {
+    background: #2c3e50;
+    color: #2c5364;
+  }
+
+  #form button[type="submit"] {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    border: none;
+    border-radius: 50%;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #form button[type="submit"]:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(44, 83, 100, 0.4);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1a2735;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3c506f;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #5e789b;
+  }
+
+  @media (max-width: 768px) {
+    aside {
+      width: 280px;
+    }
+    .message {
+      max-width: 85%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    body {
+      flex-direction: column;
+    }
+    aside {
+      width: 100%;
+      height: 40vh;
+    }
+    main {
+      height: 60vh;
+    }
+  }
+</style>
+
+</head>
+<body>
+  <aside>
+    <div class="sidebar-header">
+      <h1>Convo</h1>
+      <p>Direct Messages</p>
+    </div>
+    
+    <button id="groupsBtn">
+      <i class="fas fa-users"></i>
+      Go to Groups
+    </button>
+    
+    <div class="contacts-section">
+      <div class="section-title">Contacts</div>
+      <ul id="contactsList">
+        <!-- Contacts will be populated here -->
+      </ul>
+    </div>
+    
+    <div class="add-contact">
+      <form id="addContactForm">
+        <input type="tel" name="phone" placeholder="Add contact phone number" required />
+        <button type="submit">
+          <i class="fas fa-plus"></i> Add Contact
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <main>
+    <div class="chat-header">
+      <div class="contact-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div>
+        <h2>Direct Chat</h2>
+        <div class="status">Select a contact to start chatting</div>
+      </div>
+    </div>
+    
+    <div id="messages">
+      <!-- Messages will be populated here -->
+    </div>
+    
+    <div class="message-input-container">
+      <form id="form">
+        <input id="input" type="text" placeholder="Type a message..." />
+        <div class="file-upload">
+          <input type="file" id="fileUpload" />
+          <i class="fas fa-paperclip file-upload-icon"></i>
+        </div>
+        <button type="submit">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/chat.js"></script>
+</body>
+</html>
